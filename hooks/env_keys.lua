@@ -1,14 +1,13 @@
 --- Sets environment variables for the installed version.
 --- @param ctx table
 --- @field ctx.path string Installation path
---- @field ctx.version string Installed version
 --- @return table Environment variables
 function PLUGIN:EnvKeys(ctx)
-    -- The zip extracts to asciidoctorj-{version}/bin/
+    -- mise flattens the zip structure, so bin is directly in ctx.path
     return {
         {
             key = "PATH",
-            value = ctx.path .. "/asciidoctorj-" .. ctx.version .. "/bin"
+            value = ctx.path .. "/bin"
         }
     }
 end
