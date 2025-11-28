@@ -28,7 +28,23 @@ jobs:
       - name: List available versions
         run: mise ls-remote "vfox:${{ github.repository }}" | head -20
 
-      - name: Install and test asciidoctorj
+      - name: Install asciidoctorj
         run: |
-          mise install "vfox:${{ github.repository }}@3.0.0"
-          mise exec "vfox:${{ github.repository }}@3.0.0" -- asciidoctorj --version
+          MISE_VERBOSE=1 mise install "vfox:${{ github.repository }}@3.0.0"
+
+      - name: Debug installed structure
+        shell: bash
+        run: |
+          echo "=== Install path ==="
+          mise where "vfox:${{ github.repository }}@3.0.0"
+          INSTALL_PATH=$(mise where "vfox:${{ github.repository }}@3.0.0")
+          echo "=== Directory structure ==="
+          ls -la "$INSTALL_PATH" || dir "$INSTALL_PATH"
+          echo "=== Nested directory ==="
+          ls -la "$INSTALL_PATH/asciidoctorj-3.0.0" || dir "$INSTALL_PATH/asciidoctorj-3.0.0" || true
+          echo "=== Bin directory ==="
+          ls -la "$INSTALL_PATH/asciidoctorj-3.0.0/bin" || dir "$INSTALL_PATH/asciidoctorj-3.0.0/bin" || true
+
+      - name: Test asciidoctorj
+        run: |
+          MISE_VERBOSE=1 mise exec "vfox:${{ github.repository }}@3.0.0" -- asciidoctorj --version
