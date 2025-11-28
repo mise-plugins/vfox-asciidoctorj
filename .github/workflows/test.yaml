@@ -1,0 +1,34 @@
+name: Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install mise
+        uses: jdx/mise-action@v2
+
+      - name: List available versions
+        run: mise ls-remote "vfox:${{ github.repository }}" | head -20
+
+      - name: Install and test asciidoctorj
+        run: |
+          mise install "vfox:${{ github.repository }}@3.0.0"
+          mise exec "vfox:${{ github.repository }}@3.0.0" -- asciidoctorj --version
